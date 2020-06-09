@@ -1,55 +1,77 @@
 <template>
-  <el-table :data="list" style="width: 100%;padding-top: 15px;">
-    <el-table-column label="Order_No" min-width="200">
-      <template slot-scope="scope">
-        {{ scope.row.order_no | orderNoFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Price" width="195" align="center">
-      <template slot-scope="scope">
-        ¥{{ scope.row.price | toThousandFilter }}
-      </template>
-    </el-table-column>
-    <el-table-column label="Status" width="100" align="center">
-      <template slot-scope="{row}">
-        <el-tag :type="row.status | statusFilter">
-          {{ row.status }}
-        </el-tag>
-      </template>
-    </el-table-column>
-  </el-table>
+  <div>
+    <p v-html="msg"></p>
+    <el-input v-model="input" placeholder="请输入内容"></el-input>
+    <el-button type="primary" @click="fetchData">发送</el-button>
+  </div>
 </template>
 
 <script>
-import { transactionList } from '@/api/remote-search'
-
+import { mapGetters } from 'vuex'
+import store from 'vuex'
 export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        success: 'success',
-        pending: 'danger'
-      }
-      return statusMap[status]
+        success: "success",
+        pending: "danger"
+      };
+      return statusMap[status];
     },
     orderNoFilter(str) {
-      return str.substring(0, 30)
+      return str.substring(0, 30);
+    },
+    send() {
+      var soket = new WebSocket("ws://383d6c1f.ngrok2.xiaomiqiu.cn/ws");
+      soket.onmessage(event => {});
+      soket.onopen(event => {});
+      soket.onclose(event => {});
+      soket.send(JSON.stringify(this.input))
     }
   },
   data() {
     return {
-      list: null
-    }
+      list: null,
+      msg: "你好",
+      input: "",
+      soket: new WebSocket("ws://383d6c1f.ngrok2.xiaomiqiu.cn/ws")
+    };
   },
   created() {
-    this.fetchData()
+    
+  },
+  mounted() {
+    let _that = this;
+      _that.soket.onmessage = function(event) {
+        console.log(event);
+        _that.msg = JSON.parse(event.data).chatMsg.msg;
+      };
+      _that.soket.onopen = function(event){
+        console.log('连接成功')
+        _that.soket.send(JSON.stringify({"msgActionType":"CONNECT","token":_that.$store.getters.userInfo.accessToken,"chatMsg":{"senderId":"758181502631937","receiverId":"","msg":_that.input}}))
+      };
+      _that.soket.onclose = function(event){
+        console.log('连接关闭')
+      };
   },
   methods: {
     fetchData() {
-      transactionList().then(response => {
-        this.list = response.data.items.slice(0, 8)
-      })
+      let _that = this;
+      if (!window.WebSocket) { return; }
+      console.log(_that.soket.readyState);
+      console.log(WebSocket.OPEN)
+      console.log(this.userInfo);
+      if (_that.soket.readyState == WebSocket.OPEN) { 
+        _that.soket.send(JSON.stringify({"msgActionType":"CHAT","token":this.userInfo.accessToken,"chatMsg":{"senderId":"758181502631937","receiverId":"742396234432513","msg":_that.input}}))
+      } else {
+        _that.soket.send(JSON.stringify({"msgActionType":"CONNECT","token":this.userInfo.accessToken,"chatMsg":{"senderId":"123456","receiverId":"","msg": ''}}))
+      }
     }
+  },
+  computed: {
+    ...mapGetters([
+      'userInfo'
+    ])
   }
-}
+};
 </script>

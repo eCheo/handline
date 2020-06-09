@@ -6,6 +6,7 @@ const state = {
   name: '',
   avatar: '',
   introduction: '',
+  token: '',
   roles: [],
   userInfo: {}
 }
@@ -13,6 +14,9 @@ const state = {
 const mutations = {
   SET_USERINFO: (state, userInfo) => {
     state.userInfo = userInfo
+  },
+  SET_TOKEN: (state, token) => {
+    state.token = token
   },
   SET_INTRODUCTION: (state, introduction) => {
     state.introduction = introduction
@@ -31,13 +35,16 @@ const mutations = {
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password, passwordType } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password, passwordType: passwordType }).then(response => {
-        console.log(response);
-        const { data } = response.data
+      login(userInfo).then(response => {
+        const  data  = response.data
         commit('SET_USERINFO', data)
-        // setToken(data.token)
+        commit('SET_TOKEN', 'admin-token')
+        setToken('admin-token')
+        commit('SET_ROLES', ['admin'])
+        commit('SET_NAME', userInfo.account)
+        // commit('SET_AVATAR', avatar)
+        // commit('SET_INTRODUCTION', introduction)
         resolve()
       }).catch(error => {
         reject(error)

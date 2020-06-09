@@ -12,15 +12,15 @@
         <h3 class="title">Login Form</h3>
       </div>
 
-      <el-form-item prop="username">
+      <el-form-item prop="account">
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
+          ref="account"
+          v-model="loginForm.account"
           placeholder="Username"
-          name="username"
+          name="account"
           type="text"
           tabindex="1"
           autocomplete="on"
@@ -28,15 +28,15 @@
       </el-form-item>
 
       <el-tooltip v-model="capsTooltip" content="Caps lock is On" placement="right" manual>
-        <el-form-item prop="password">
+        <el-form-item prop="passWord">
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
           <el-input
-            :key="loginForm.passwordType"
+            :key="loginForm.loginType"
             ref="password"
-            v-model="loginForm.password"
-            :type="loginForm.passwordType"
+            v-model="loginForm.passWord"
+            :type="loginForm.loginType"
             placeholder="Password"
             name="password"
             tabindex="2"
@@ -46,7 +46,7 @@
             @keyup.enter.native="handleLogin"
           />
           <span class="show-pwd" @click="showPwd">
-            <svg-icon :icon-class="loginForm.passwordType === 'PASSWORD' ? 'eye' : 'eye-open'" />
+            <svg-icon :icon-class="loginForm.loginType === 'PASSWORD' ? 'eye' : 'eye-open'" />
           </span>
         </el-form-item>
       </el-tooltip>
@@ -93,9 +93,9 @@ export default {
     };
     return {
       loginForm: {
-        username: "news03",
-        password: "123456",
-        passwordType: "PASSWORD"
+        account: "news03",
+        passWord: "123456",
+        loginType: "PASSWORD"
       },
       loginRules: {
         // username: [

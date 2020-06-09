@@ -1,7 +1,6 @@
 import request from '@/utils/request'
 import getter from '@/store/getters'
 export function login(data) {
-  console.log('发送请求')
   return request({
     url: '/api/front/member/login.json',
     headers: {
@@ -25,7 +24,7 @@ export function logout() {
   return request({
     url: '/api/front/member/loginOut.json',
     headers: {
-      Authorization: getter.userInfo.tokenType + ' ' + getter.userInfo.token,
+      Authorization: getter.userInfo.tokenType + ' ' + getter.userInfo.accessToken,
       'Content-Type': 'application/json'
     },
     method: 'post'
